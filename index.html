@@ -102,125 +102,16 @@
   <button onclick="showSection('aboutSection')">关于我</button>
   <button onclick="showSection('philosophySection')">我的理念</button>
   <button onclick="showSection('supportSection')">支持</button>
+  <button onclick="showSection('myWorksSection')">我的制作</button>
 </nav>
 
 <!-- 主体 -->
 <main>
-<section id="introSection">
-  <h1>hey! I am Obnus! Welcome my page!</h1>
-  <p>欢迎来到我的个人网站！这里是我的简单介绍区。</p>
-</section>
+  <section id="introSection">
+    <h1>hey! I am Obnus! Welcome my page!</h1>
+    <p>欢迎来到我的个人网站！这里是我的简单介绍区。</p>
+  </section>
 
-<!-- 飞机互动区域 -->
-<section id="gameSection" style="margin-top: 40px;">
-  <h2>试试这个小游戏吧 🎮</h2>
-  <p>移动鼠标来操控飞机，看看你能躲过多少子弹！</p>
-  <canvas id="gameCanvas" width="800" height="400" style="border:1px solid #ccc; background: #eef;"></canvas>
-</section>
-
-<script>
-  const canvas = document.getElementById('gameCanvas');
-  const ctx = canvas.getContext('2d');
-
-  let mouseX = canvas.width / 2;
-  let mouseY = canvas.height / 2;
-
-  const player = { x: mouseX, y: mouseY, size: 15, hit: false };
-  const enemies = [];
-  const bullets = [];
-
-  // 创建敌人
-  function spawnEnemy() {
-    const x = Math.random() * canvas.width;
-    const y = Math.random() * canvas.height / 2;
-    enemies.push({ x, y, size: 12 });
-  }
-
-  // 发射子弹
-  function shootBullet(enemy) {
-    const dx = player.x - enemy.x;
-    const dy = player.y - enemy.y;
-    const dist = Math.hypot(dx, dy);
-    bullets.push({
-      x: enemy.x,
-      y: enemy.y,
-      dx: dx / dist,
-      dy: dy / dist,
-      speed: 3
-    });
-  }
-
-  // 鼠标移动
-  canvas.addEventListener('mousemove', e => {
-    const rect = canvas.getBoundingClientRect();
-    mouseX = e.clientX - rect.left;
-    mouseY = e.clientY - rect.top;
-  });
-
-  function update() {
-    player.x = mouseX;
-    player.y = mouseY;
-
-    // 敌人开火
-    if (Math.random() < 0.02 && enemies.length > 0) {
-      const enemy = enemies[Math.floor(Math.random() * enemies.length)];
-      shootBullet(enemy);
-    }
-
-    // 子弹移动
-    for (let b of bullets) {
-      b.x += b.dx * b.speed;
-      b.y += b.dy * b.speed;
-      if (Math.hypot(b.x - player.x, b.y - player.y) < player.size) {
-        player.hit = true;
-        setTimeout(() => player.hit = false, 200);
-      }
-    }
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // 玩家飞机
-    ctx.fillStyle = player.hit ? 'red' : 'blue';
-    ctx.beginPath();
-    ctx.moveTo(player.x, player.y - player.size);
-    ctx.lineTo(player.x - player.size, player.y + player.size);
-    ctx.lineTo(player.x + player.size, player.y + player.size);
-    ctx.closePath();
-    ctx.fill();
-
-    // 敌人
-    ctx.fillStyle = 'black';
-    for (let e of enemies) {
-      ctx.beginPath();
-      ctx.arc(e.x, e.y, e.size, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    // 子弹
-    ctx.fillStyle = 'orange';
-    for (let b of bullets) {
-      ctx.beginPath();
-      ctx.arc(b.x, b.y, 3, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-
-  function loop() {
-    update();
-    draw();
-    requestAnimationFrame(loop);
-  }
-
-  // 初始敌人
-  for (let i = 0; i < 5; i++) spawnEnemy();
-
-  loop();
-</script>
-
-
-  
   <section id="aboutSection" class="hidden">
     <h2>关于我</h2>
     <div class="qrcode-container">
@@ -256,6 +147,13 @@
       </div>
     </div>
   </section>
+
+  <!-- 飞机互动区域 -->
+  <section id="myWorksSection" class="hidden" style="margin-top: 40px;">
+    <h2>试试这个小游戏吧 🎮</h2>
+    <p>移动鼠标来操控飞机，看看你能躲过多少子弹！</p>
+    <canvas id="gameCanvas" width="800" height="400" style="border:1px solid #ccc; background: #eef;"></canvas>
+  </section>
 </main>
 
 <script>
@@ -270,12 +168,96 @@
     document.getElementById(id).classList.remove('hidden');
     toggleMenu(); // 切换完自动收起菜单
   }
+
+  // 游戏逻辑
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+
+  let mouseX = canvas.width / 2;
+  let mouseY = canvas.height / 2;
+  const player = { x: mouseX, y: mouseY, size: 15, hit: false };
+  const enemies = [];
+  const bullets = [];
+
+  function spawnEnemy() {
+    const x = Math.random() * canvas.width;
+    const y = Math.random() * canvas.height / 2;
+    enemies.push({ x, y, size: 12 });
+  }
+
+  function shootBullet(enemy) {
+    const dx = player.x - enemy.x;
+    const dy = player.y - enemy.y;
+    const dist = Math.hypot(dx, dy);
+    bullets.push({
+      x: enemy.x,
+      y: enemy.y,
+      dx: dx / dist,
+      dy: dy / dist,
+      speed: 3
+    });
+  }
+
+  canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    mouseX = e.clientX - rect.left;
+    mouseY = e.clientY - rect.top;
+  });
+
+  function update() {
+    player.x = mouseX;
+    player.y = mouseY;
+    if (Math.random() < 0.02 && enemies.length > 0) {
+      const enemy = enemies[Math.floor(Math.random() * enemies.length)];
+      shootBullet(enemy);
+    }
+    for (let b of bullets) {
+      b.x += b.dx * b.speed;
+      b.y += b.dy * b.speed;
+      if (Math.hypot(b.x - player.x, b.y - player.y) < player.size) {
+        player.hit = true;
+        setTimeout(() => player.hit = false, 200);
+      }
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = player.hit ? 'red' : 'blue';
+    ctx.beginPath();
+    ctx.moveTo(player.x, player.y - player.size);
+    ctx.lineTo(player.x - player.size, player.y + player.size);
+    ctx.lineTo(player.x + player.size, player.y + player.size);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = 'black';
+    for (let e of enemies) {
+      ctx.beginPath();
+      ctx.arc(e.x, e.y, e.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.fillStyle = 'orange';
+    for (let b of bullets) {
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function loop() {
+    update();
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  for (let i = 0; i < 5; i++) spawnEnemy();
+  loop();
 </script>
 
 </body>
 </html>
-
-</script>
 
 
 
